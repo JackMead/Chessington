@@ -19,7 +19,7 @@ namespace Chessington.GameEngine
             Single, Double
         }
 
-        public static List<Square> AddKnightMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddKnightMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
             var possibleKnightLocations = GetPossibleKnightMoves(pieceLocation);
 
@@ -27,6 +27,11 @@ namespace Chessington.GameEngine
             {
                 if (Board.IsValidPosition(square))
                 {
+                    if (board.GetPiece(square) != null &&
+                        board.GetPiece(square).Player == board.GetPiece(pieceLocation).Player)
+                    {
+                        continue;
+                    }
                     availableMoves.Add(square);
                 }
             }
