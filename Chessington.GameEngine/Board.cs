@@ -21,6 +21,16 @@ namespace Chessington.GameEngine
             CapturedPieces = new List<Piece>();
         }
 
+        public static bool IsValidPosition(Square position)
+        {
+            if (position.Row < 0 || position.Row >= GameSettings.BoardSize || position.Col < 0 ||
+                position.Col >= GameSettings.BoardSize)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public void AddPiece(Square square, Piece pawn)
         {
             board[square.Row, square.Col] = pawn;
