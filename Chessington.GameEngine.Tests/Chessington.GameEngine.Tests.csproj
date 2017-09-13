@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoardTests.cs" />
+    <Compile Include="EndGameTests.cs" />
     <Compile Include="Pieces\CheckTests.cs" />
     <Compile Include="Pieces\KingTests.cs" />
     <Compile Include="Pieces\BishopTests.cs" />
