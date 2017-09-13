@@ -9,46 +9,37 @@ namespace Chessington.GameEngine
 {
     class MoveFinder
     {
-        private List<Square> availableMoves;
-
-        public List<Square> GetAvailableMovesPawn(Player player, Board board, Square pieceLocation)
+        public static List<Square> AddKnightMoves(List<Square> availableMoves, Square pieceLocation)
         {
-            availableMoves = new List<Square>();
-            availableMoves.Add(GetPawnSingleVerticalMove(player, board, pieceLocation));
-            if (!board.GetPiece(pieceLocation).HasMoved)
+            var possibleKnightLocations = GetPossibleKnightMoves(pieceLocation);
+
+            foreach (var square in possibleKnightLocations)
             {
-                availableMoves.Add(GetPawnDoubleVerticalMove(player, board, pieceLocation));
+                if (Board.IsValidPosition(square))
+                {
+                    availableMoves.Add(square);
+                }
             }
             return availableMoves;
         }
-    
-        public List<Square> GetAvailableMovesQueen(Player player, Board board, Square pieceLocation)
+
+        public static List<Square> GetPossibleKnightMoves(Square pieceLocation)
         {
-            availableMoves = new List<Square>();
-            availableMoves = AddDiagonalMoves(availableMoves, pieceLocation);
-            availableMoves = AddLateralMoves(availableMoves, pieceLocation);
-            return availableMoves;
+            var possibleKnightMoves = new List<Square>();
+
+            possibleKnightMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col + 2));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col + 2));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col - 2));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col - 2));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row + 2, pieceLocation.Col + 1));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row + 2, pieceLocation.Col - 1));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row - 2, pieceLocation.Col + 1));
+            possibleKnightMoves.Add(new Square(pieceLocation.Row - 2, pieceLocation.Col - 1));
+
+            return possibleKnightMoves;
         }
 
-        public List<Square> GetAvailableMovesRook(Player player, Board board, Square pieceLocation)
-        {
-            availableMoves= new List<Square>();
-
-            availableMoves = AddVerticalMoves(availableMoves, pieceLocation);
-            availableMoves = AddHorizontalMoves(availableMoves, pieceLocation);
-            return availableMoves;
-        }
-
-        public List<Square> GetAvailableMovesBishop(Player player, Board board, Square pieceLocation)
-        {
-            availableMoves = new List<Square> { };
-
-            availableMoves = AddDiagonalMoves(availableMoves, pieceLocation);
-            return availableMoves;
-        }
-
-
-        public Square GetPawnSingleVerticalMove(Player player, Board board, Square pawnLocation)
+        public static Square GetPawnSingleVerticalMove(Player player, Board board, Square pawnLocation)
         {
             if (player == Player.White)
             {
@@ -61,7 +52,7 @@ namespace Chessington.GameEngine
             }
         }
 
-        public Square GetPawnDoubleVerticalMove(Player player, Board board, Square pawnLocation)
+        public static Square GetPawnDoubleVerticalMove(Player player, Board board, Square pawnLocation)
         {
             if (player == Player.White)
             {
@@ -74,14 +65,14 @@ namespace Chessington.GameEngine
 
         }
 
-        private List<Square> AddLateralMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddLateralMoves(List<Square> availableMoves, Square pieceLocation)
         {
             availableMoves = AddVerticalMoves(availableMoves, pieceLocation);
             availableMoves = AddHorizontalMoves(availableMoves, pieceLocation);
             return availableMoves;
         }
 
-        private List<Square> AddDiagonalMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddDiagonalMoves(List<Square> availableMoves, Square pieceLocation)
         {
 
 
@@ -110,7 +101,8 @@ namespace Chessington.GameEngine
             }
             return availableMoves;
         }
-        private List<Square> AddHorizontalMoves(List<Square> availableMoves, Square pieceLocation)
+
+        public static List<Square> AddHorizontalMoves(List<Square> availableMoves, Square pieceLocation)
         {
             for (int i = 0; i < GameSettings.BoardSize; i++)
             {
@@ -123,7 +115,7 @@ namespace Chessington.GameEngine
             return availableMoves;
         }
 
-        private List<Square> AddVerticalMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddVerticalMoves(List<Square> availableMoves, Square pieceLocation)
         {
             for (int i = 0; i < GameSettings.BoardSize; i++)
             {
