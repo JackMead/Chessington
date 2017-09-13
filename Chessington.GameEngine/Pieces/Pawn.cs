@@ -19,8 +19,20 @@ namespace Chessington.GameEngine.Pieces
 
         public List<Square> GetAvailableMovesPawn(Player player, Board board, Square pieceLocation)
         {
-            var availableMoves = MoveFinder.GetPawnVerticalMoves(player, board, pieceLocation);
-            return availableMoves;
+
+            var verticalMoves = new List<Square> { };
+            verticalMoves = MoveFinder.GetValidVerticalPawnMoves(verticalMoves, player, board, pieceLocation, MoveFinder.PawnMove.Single);
+            if (!verticalMoves.Any())
+            {
+                return verticalMoves;
+            }
+
+            if (!board.GetPiece(pieceLocation).HasMoved)
+            {
+                verticalMoves = MoveFinder.GetValidVerticalPawnMoves(verticalMoves, player, board, pieceLocation, MoveFinder.PawnMove.Double);
+            }
+
+            return verticalMoves;
         }
 
 
