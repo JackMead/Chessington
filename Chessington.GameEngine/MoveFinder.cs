@@ -127,5 +127,37 @@ namespace Chessington.GameEngine
 
             return availableMoves;
         }
+
+        public static List<Square> GetKingMoves(Square pieceLocation)
+        {
+            var possibleMoves = GetPossibleKingMoves(pieceLocation);
+            var availableMoves = new List<Square>();
+            foreach (var square in possibleMoves) 
+            {
+                if (Board.IsValidPosition(square))
+                {
+                    availableMoves.Add((square));
+                }
+            }
+
+            return availableMoves;
+        }
+
+        public static List<Square> GetPossibleKingMoves(Square pieceLocation)
+        {
+            var possibleMoves = new List<Square>();
+            
+
+            possibleMoves.Add(new Square(pieceLocation.Row+1,pieceLocation.Col));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col));
+            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col+1));
+            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col-1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col+1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col-1));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col+1));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col-1));
+
+            return possibleMoves;
+        }
     }
 }
