@@ -19,6 +19,62 @@ namespace Chessington.GameEngine
             Single, Double
         }
 
+        public static List<Square> GetPawnMoves(Player player, Board board, Square pawnLocation)
+        {
+            var availableMoves=new List<Square>();
+            var verticalMoves = GetValidVerticalPawnMoves(availableMoves, player, board, pawnLocation, PawnMove.Single);
+            if (verticalMoves.Any())
+            {
+                if (!board.GetPiece(pawnLocation).HasMoved)
+                {
+                    verticalMoves = GetValidVerticalPawnMoves(verticalMoves, player, board, pawnLocation, PawnMove.Double);
+                }
+            }
+            availableMoves = verticalMoves;
+
+            availableMoves = GetPawnDiagonalMoves(availableMoves, player, board, pawnLocation);
+
+            return availableMoves;
+        }
+
+        private static List<Square> GetPawnDiagonalMoves(List<Square> availableMoves, Player player, Board board, Square pawnLocation)
+        {
+            if (player == Player.White)
+            {
+                if (IsAbleToTakeDiagonal(board, pawnLocation, Directions.UpLeft, player))
+                {
+                    availableMoves.Add(GetNewPositionByDirectionAndDistance(pawnLocation, Directions.UpLeft, 1));
+                }
+                if (IsAbleToTakeDiagonal(board, pawnLocation, Directions.UpRight, player))
+                {
+                    availableMoves.Add(GetNewPositionByDirectionAndDistance(pawnLocation, Directions.UpRight, 1));
+                }
+            }
+            else
+            {
+                if (IsAbleToTakeDiagonal(board, pawnLocation, Directions.DownLeft, player))
+                {
+                    availableMoves.Add(GetNewPositionByDirectionAndDistance(pawnLocation, Directions.DownLeft, 1));
+                }
+                if (IsAbleToTakeDiagonal(board, pawnLocation, Directions.DownRight, player))
+                {
+                    availableMoves.Add(GetNewPositionByDirectionAndDistance(pawnLocation, Directions.DownRight, 1));
+                }
+            }
+
+            return availableMoves;
+        }
+
+        private static bool IsAbleToTakeDiagonal(Board board, Square pawnLocation, Directions direction, Player player)
+        {
+            Square newLocation = GetNewPositionByDirectionAndDistance(pawnLocation, direction, 1);
+            if (Board.IsValidPosition(newLocation) && board.GetPiece(newLocation) != null && board.GetPiece(newLocation).Player != player)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static List<Square> GetKnightMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
             var possibleKnightLocations = GetPossibleKnightMoves(pieceLocation);
@@ -53,7 +109,7 @@ namespace Chessington.GameEngine
 
             return possibleKnightMoves;
         }
-        
+
         public static List<Square> GetValidVerticalPawnMoves(List<Square> availableMoves, Player player, Board board, Square pawnLocation, PawnMove singleOrDouble)
         {
             var jump = 1;
@@ -81,137 +137,137 @@ namespace Chessington.GameEngine
             }
             return availableMoves;
         }
-        
-    public static List<Square> AddLateralMoves(List<Square> availableMoves, Board board, Square pieceLocation)
-    {
-        availableMoves = AddVerticalMoves(availableMoves, board, pieceLocation);
-        availableMoves = AddHorizontalMoves(availableMoves, board, pieceLocation);
-        return availableMoves;
-    }
 
-    public static List<Square> AddDiagonalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
-    {
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.UpRight);
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.UpLeft);
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.DownRight);
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.DownLeft);
-
-        return availableMoves;
-    }
-
-    public static List<Square> AddHorizontalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
-    {
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Left);
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Right);
-
-        return availableMoves;
-    }
-
-    public static List<Square> AddVerticalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
-    {
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Up);
-        availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Down);
-
-        return availableMoves;
-    }
-
-    public static List<Square> AddMovesUntilCollision(List<Square> availableMoves, Board board,
-        Square pieceLocation, Directions direction)
-    {
-        for (int i = 1; i < GameSettings.BoardSize; i++)
+        public static List<Square> AddLateralMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
-            var newPosition = GetNewPositionByDirectionAndDistance(pieceLocation, direction, i);
-
-            if (!Board.IsValidPosition(newPosition))
-            {
-                break;
-            }
-
-            if (board.GetPiece(newPosition) == null)
-            {
-                availableMoves.Add(newPosition);
-            }
-            else if (board.GetPiece(newPosition).Player != board.GetPiece(pieceLocation).Player)
-            {
-                availableMoves.Add(newPosition);
-                break;
-            }
-            else
-            {
-                break;
-            }
+            availableMoves = AddVerticalMoves(availableMoves, board, pieceLocation);
+            availableMoves = AddHorizontalMoves(availableMoves, board, pieceLocation);
+            return availableMoves;
         }
-        return availableMoves;
-    }
 
-    private static Square GetNewPositionByDirectionAndDistance(Square pieceLocation, Directions direction, int i)
-    {
-        switch (direction)
+        public static List<Square> AddDiagonalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
-            case Directions.Up:
-                return new Square(pieceLocation.Row - i, pieceLocation.Col);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.UpRight);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.UpLeft);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.DownRight);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.DownLeft);
 
-            case Directions.Down:
-                return new Square(pieceLocation.Row + i, pieceLocation.Col);
-
-            case Directions.Left:
-                return new Square(pieceLocation.Row, pieceLocation.Col - i);
-
-            case Directions.Right:
-                return new Square(pieceLocation.Row, pieceLocation.Col + i);
-
-            case Directions.UpRight:
-                return new Square(pieceLocation.Row - i, pieceLocation.Col + i);
-
-            case Directions.DownRight:
-                return new Square(pieceLocation.Row + i, pieceLocation.Col + i);
-
-            case Directions.UpLeft:
-                return new Square(pieceLocation.Row - i, pieceLocation.Col - i);
-
-            case Directions.DownLeft:
-                return new Square(pieceLocation.Row + i, pieceLocation.Col - i);
-
+            return availableMoves;
         }
-        return new Square();
-    }
 
-    public static List<Square> GetKingMoves(Square pieceLocation, Board board)
-    {
-
-        var possibleKingLocations = GetPossibleKingMoves(pieceLocation);
-        var availableMoves = new List<Square>();
-
-        foreach (var square in possibleKingLocations)
+        public static List<Square> AddHorizontalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
-            if (Board.IsValidPosition(square))
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Left);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Right);
+
+            return availableMoves;
+        }
+
+        public static List<Square> AddVerticalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
+        {
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Up);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Down);
+
+            return availableMoves;
+        }
+
+        public static List<Square> AddMovesUntilCollision(List<Square> availableMoves, Board board,
+            Square pieceLocation, Directions direction)
+        {
+            for (int i = 1; i < GameSettings.BoardSize; i++)
             {
-                if (board.GetPiece(square) != null &&
-                    board.GetPiece(square).Player == board.GetPiece(pieceLocation).Player)
+                var newPosition = GetNewPositionByDirectionAndDistance(pieceLocation, direction, i);
+
+                if (!Board.IsValidPosition(newPosition))
                 {
-                    continue;
+                    break;
                 }
-                availableMoves.Add(square);
+
+                if (board.GetPiece(newPosition) == null)
+                {
+                    availableMoves.Add(newPosition);
+                }
+                else if (board.GetPiece(newPosition).Player != board.GetPiece(pieceLocation).Player)
+                {
+                    availableMoves.Add(newPosition);
+                    break;
+                }
+                else
+                {
+                    break;
+                }
             }
+            return availableMoves;
         }
-        return availableMoves;
+
+        private static Square GetNewPositionByDirectionAndDistance(Square pieceLocation, Directions direction, int i)
+        {
+            switch (direction)
+            {
+                case Directions.Up:
+                    return new Square(pieceLocation.Row - i, pieceLocation.Col);
+
+                case Directions.Down:
+                    return new Square(pieceLocation.Row + i, pieceLocation.Col);
+
+                case Directions.Left:
+                    return new Square(pieceLocation.Row, pieceLocation.Col - i);
+
+                case Directions.Right:
+                    return new Square(pieceLocation.Row, pieceLocation.Col + i);
+
+                case Directions.UpRight:
+                    return new Square(pieceLocation.Row - i, pieceLocation.Col + i);
+
+                case Directions.DownRight:
+                    return new Square(pieceLocation.Row + i, pieceLocation.Col + i);
+
+                case Directions.UpLeft:
+                    return new Square(pieceLocation.Row - i, pieceLocation.Col - i);
+
+                case Directions.DownLeft:
+                    return new Square(pieceLocation.Row + i, pieceLocation.Col - i);
+
+            }
+            return new Square();
         }
 
-    public static List<Square> GetPossibleKingMoves(Square pieceLocation)
-    {
-        var possibleMoves = new List<Square>();
+        public static List<Square> GetKingMoves(Square pieceLocation, Board board)
+        {
+
+            var possibleKingLocations = GetPossibleKingMoves(pieceLocation);
+            var availableMoves = new List<Square>();
+
+            foreach (var square in possibleKingLocations)
+            {
+                if (Board.IsValidPosition(square))
+                {
+                    if (board.GetPiece(square) != null &&
+                        board.GetPiece(square).Player == board.GetPiece(pieceLocation).Player)
+                    {
+                        continue;
+                    }
+                    availableMoves.Add(square);
+                }
+            }
+            return availableMoves;
+        }
+
+        public static List<Square> GetPossibleKingMoves(Square pieceLocation)
+        {
+            var possibleMoves = new List<Square>();
 
 
-        possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col));
-        possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col));
-        possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col + 1));
-        possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col - 1));
-        possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col + 1));
-        possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col - 1));
-        possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col + 1));
-        possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col - 1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col));
+            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col + 1));
+            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col - 1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col + 1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col - 1));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col + 1));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col - 1));
 
-        return possibleMoves;
+            return possibleMoves;
+        }
     }
-}
 }
