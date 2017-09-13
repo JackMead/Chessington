@@ -20,8 +20,8 @@ namespace Chessington.GameEngine.Pieces
         public List<Square> GetAvailableMovesQueen(Player player, Board board, Square pieceLocation)
         {
             var availableMoves = new List<Square>();
-            availableMoves = MoveFinder.AddDiagonalMoves(availableMoves, pieceLocation);
-            availableMoves = MoveFinder.AddLateralMoves(availableMoves, pieceLocation);
+            availableMoves = MoveFinder.AddDiagonalMoves(availableMoves, board, pieceLocation);
+            availableMoves = MoveFinder.AddLateralMoves(availableMoves, board, pieceLocation);
             return availableMoves;
         }
 

@@ -9,6 +9,10 @@ namespace Chessington.GameEngine
 {
     class MoveFinder
     {
+        public enum Directions {
+            Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight
+        };
+
         public static List<Square> AddKnightMoves(List<Square> availableMoves, Square pieceLocation)
         {
             var possibleKnightLocations = GetPossibleKnightMoves(pieceLocation);
@@ -38,7 +42,7 @@ namespace Chessington.GameEngine
 
             return possibleKnightMoves;
         }
-
+        
         public static List<Square> GetPawnVerticalMoves(Player player, Board board, Square pawnLocation)
         {
             var verticalMoves = new List<Square> {};
@@ -85,14 +89,14 @@ namespace Chessington.GameEngine
             return availableMoves;
         }
 
-        public static List<Square> AddLateralMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddLateralMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
-            availableMoves = AddVerticalMoves(availableMoves, pieceLocation);
-            availableMoves = AddHorizontalMoves(availableMoves, pieceLocation);
+            availableMoves = AddVerticalMoves(availableMoves, board, pieceLocation);
+            availableMoves = AddHorizontalMoves(availableMoves, board, pieceLocation);
             return availableMoves;
         }
 
-        public static List<Square> AddDiagonalMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddDiagonalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
 
 
@@ -122,30 +126,81 @@ namespace Chessington.GameEngine
             return availableMoves;
         }
 
-        public static List<Square> AddHorizontalMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddHorizontalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
-            for (int i = 0; i < GameSettings.BoardSize; i++)
-            {
-                if (pieceLocation.Col != i)
-                {
-                    availableMoves.Add(new Square(pieceLocation.Row, i));
-                }
-            }
-
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Left);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Right);
+            
             return availableMoves;
         }
 
-        public static List<Square> AddVerticalMoves(List<Square> availableMoves, Square pieceLocation)
+        public static List<Square> AddVerticalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
-            for (int i = 0; i < GameSettings.BoardSize; i++)
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Up);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Down);
+            
+            return availableMoves;
+        }
+
+        public static List<Square> AddMovesUntilCollision(List<Square> availableMoves, Board board,
+            Square pieceLocation, Directions direction)
+        {
+            for (int i = 1; i < GameSettings.BoardSize; i++)
             {
-                if (pieceLocation.Row != i)
+                var newPosition = GetNewPositionByDirectionAndDistance(pieceLocation, direction, i);
+
+                if (!Board.IsValidPosition(newPosition))
                 {
-                    availableMoves.Add(new Square(i, pieceLocation.Col));
+                    break;
+                }
+
+                if (board.GetPiece(newPosition) == null)
+                {
+                    availableMoves.Add(newPosition);
+                }
+                else if (board.GetPiece(newPosition).Player != board.GetPiece(pieceLocation).Player)
+                {
+                    availableMoves.Add(newPosition);
+                    break;
+                }
+                else
+                {
+                    break;
                 }
             }
-
             return availableMoves;
+        }
+
+        private static Square GetNewPositionByDirectionAndDistance(Square pieceLocation, Directions direction, int i)
+        {
+            switch (direction)
+            {
+                case Directions.Up:
+                    return new Square(pieceLocation.Row - i,pieceLocation.Col );
+
+                case Directions.Down:
+                    return new Square(pieceLocation.Row +i, pieceLocation.Col);
+
+                case Directions.Left:
+                    return new Square(pieceLocation.Row, pieceLocation.Col-i);
+
+                case Directions.Right:
+                    return new Square(pieceLocation.Row, pieceLocation.Col +i);
+
+                case Directions.UpRight:
+                    return new Square(pieceLocation.Row-i, pieceLocation.Col + i);
+
+                case Directions.DownRight:
+                    return new Square(pieceLocation.Row+i, pieceLocation.Col + i);
+
+                case Directions.UpLeft:
+                    return new Square(pieceLocation.Row-i, pieceLocation.Col -i);
+
+                case Directions.DownLeft:
+                    return new Square(pieceLocation.Row+i, pieceLocation.Col -i);
+
+            }
+            return new Square();
         }
 
         public static List<Square> GetKingMoves(Square pieceLocation)

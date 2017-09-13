@@ -20,8 +20,8 @@ namespace Chessington.GameEngine.Pieces
         {
             var availableMoves = new List<Square>();
 
-            availableMoves = MoveFinder.AddVerticalMoves(availableMoves, pieceLocation);
-            availableMoves = MoveFinder.AddHorizontalMoves(availableMoves, pieceLocation);
+            availableMoves = MoveFinder.AddVerticalMoves(availableMoves, board, pieceLocation);
+            availableMoves = MoveFinder.AddHorizontalMoves(availableMoves, board, pieceLocation);
             return availableMoves;
         }
 
