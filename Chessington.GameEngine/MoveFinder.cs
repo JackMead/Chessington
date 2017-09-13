@@ -39,30 +39,50 @@ namespace Chessington.GameEngine
             return possibleKnightMoves;
         }
 
-        public static Square GetPawnSingleVerticalMove(Player player, Board board, Square pawnLocation)
+        public static List<Square> GetPawnVerticalMoves(Player player, Board board, Square pawnLocation)
         {
-            if (player == Player.White)
+            var verticalMoves = new List<Square> {};
+            verticalMoves=GetPawnSingleVerticalMove(verticalMoves, player, board, pawnLocation);
+            if (!verticalMoves.Any())
             {
-                return new Square(pawnLocation.Row - 1, pawnLocation.Col);
+                return verticalMoves;
             }
-            else
-            {
-                return new Square(pawnLocation.Row + 1, pawnLocation.Col);
 
+            if (!board.GetPiece(pawnLocation).HasMoved)
+            {
+                verticalMoves=GetPawnDoubleVerticalMove(verticalMoves,player, board, pawnLocation);
             }
+            
+            return verticalMoves;
         }
 
-        public static Square GetPawnDoubleVerticalMove(Player player, Board board, Square pawnLocation)
+        public static List<Square> GetPawnSingleVerticalMove(List<Square> availableMoves, Player player, Board board, Square pawnLocation)
         {
-            if (player == Player.White)
+
+            if (player == Player.White && board.GetPiece(new Square(pawnLocation.Row-1, pawnLocation.Col))==null)
             {
-                return new Square(pawnLocation.Row - 2, pawnLocation.Col);
+                availableMoves.Add(new Square(pawnLocation.Row - 1, pawnLocation.Col));
             }
-            else
+            else if(player == Player.Black && board.GetPiece(new Square(pawnLocation.Row + 1, pawnLocation.Col)) == null)
             {
-                return new Square(pawnLocation.Row + 2, pawnLocation.Col);
+                availableMoves.Add(new Square(pawnLocation.Row + 1, pawnLocation.Col));
             }
 
+            return availableMoves;
+        }
+
+        public static List<Square> GetPawnDoubleVerticalMove(List<Square> availableMoves, Player player, Board board, Square pawnLocation)
+        {
+            if (player == Player.White && board.GetPiece(new Square(pawnLocation.Row - 2, pawnLocation.Col)) == null)
+            {
+                availableMoves.Add(new Square(pawnLocation.Row - 2, pawnLocation.Col));
+            }
+            else if (player == Player.Black && board.GetPiece(new Square(pawnLocation.Row + 2, pawnLocation.Col)) == null)
+            {
+                availableMoves.Add(new Square(pawnLocation.Row + 2, pawnLocation.Col));
+            }
+
+            return availableMoves;
         }
 
         public static List<Square> AddLateralMoves(List<Square> availableMoves, Square pieceLocation)

@@ -14,18 +14,12 @@ namespace Chessington.GameEngine.Pieces
             var pawnLocation = board.FindPiece(this);
             var availableMoves = new List<Square> { };
             availableMoves = GetAvailableMovesPawn(Player, board, pawnLocation);
-            
             return availableMoves;
         }
 
         public List<Square> GetAvailableMovesPawn(Player player, Board board, Square pieceLocation)
         {
-            var availableMoves = new List<Square>();
-            availableMoves.Add(MoveFinder.GetPawnSingleVerticalMove(player, board, pieceLocation));
-            if (!board.GetPiece(pieceLocation).HasMoved)
-            {
-                availableMoves.Add(MoveFinder.GetPawnDoubleVerticalMove(player, board, pieceLocation));
-            }
+            var availableMoves = MoveFinder.GetPawnVerticalMoves(player, board, pieceLocation);
             return availableMoves;
         }
 
