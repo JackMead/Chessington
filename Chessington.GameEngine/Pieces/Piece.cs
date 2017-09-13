@@ -9,8 +9,10 @@ namespace Chessington.GameEngine.Pieces
         protected Piece(Player player)
         {
             Player = player;
+            HasMoved = false;
         }
 
+        public bool HasMoved { get; set; }
         public Player Player { get; private set; }
 
         public abstract IEnumerable<Square> GetAvailableMoves(Board board);

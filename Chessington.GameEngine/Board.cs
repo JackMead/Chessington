@@ -59,6 +59,7 @@ namespace Chessington.GameEngine
 
             //Move the piece and set the 'from' square to be empty.
             board[to.Row, to.Col] = board[from.Row, from.Col];
+            board[to.Row, to.Col].HasMoved = true;
             board[from.Row, from.Col] = null;
 
             CurrentPlayer = movingPiece.Player == Player.White ? Player.Black : Player.White;
