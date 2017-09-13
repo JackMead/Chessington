@@ -12,8 +12,8 @@ namespace Chessington.GameEngine.Pieces
         public override IEnumerable<Square> GetAvailableMoves(Board board)
         {
             var pawnLocation = board.FindPiece(this);
-
             var availableMoves = new List<Square> { };
+
             availableMoves.Add(GetPawnSingleVerticalMove(this.Player, board, pawnLocation));
             if (!HasMoved)
             {
