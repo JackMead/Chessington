@@ -20,7 +20,7 @@ namespace Chessington.GameEngine.Pieces
         private List<Square> GetAvailableMovesKing(Player player, Board board, Square pieceLocation)
         {
             var availableMoves = new List<Square>();
-            availableMoves = MoveFinder.GetKingMoves(pieceLocation);
+            availableMoves = MoveFinder.GetKingMoves(pieceLocation, board);
             return availableMoves;
         }
     }
