@@ -19,8 +19,8 @@ namespace Chessington.GameEngine.Pieces
         public List<Square> GetAvailableMovesBishop(Player player, Board board, Square pieceLocation)
         {
             var availableMoves = new List<Square> { };
-
             availableMoves = MoveFinder.AddDiagonalMoves(availableMoves,board, pieceLocation);
+
             return availableMoves;
         }
 

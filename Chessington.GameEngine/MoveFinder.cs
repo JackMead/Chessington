@@ -9,7 +9,8 @@ namespace Chessington.GameEngine
 {
     class MoveFinder
     {
-        public enum Directions {
+        public enum Directions
+        {
             Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight
         };
 
@@ -42,11 +43,11 @@ namespace Chessington.GameEngine
 
             return possibleKnightMoves;
         }
-        
+
         public static List<Square> GetPawnVerticalMoves(Player player, Board board, Square pawnLocation)
         {
-            var verticalMoves = new List<Square> {};
-            verticalMoves=GetPawnSingleVerticalMove(verticalMoves, player, board, pawnLocation);
+            var verticalMoves = new List<Square> { };
+            verticalMoves = GetPawnSingleVerticalMove(verticalMoves, player, board, pawnLocation);
             if (!verticalMoves.Any())
             {
                 return verticalMoves;
@@ -54,20 +55,20 @@ namespace Chessington.GameEngine
 
             if (!board.GetPiece(pawnLocation).HasMoved)
             {
-                verticalMoves=GetPawnDoubleVerticalMove(verticalMoves,player, board, pawnLocation);
+                verticalMoves = GetPawnDoubleVerticalMove(verticalMoves, player, board, pawnLocation);
             }
-            
+
             return verticalMoves;
         }
 
         public static List<Square> GetPawnSingleVerticalMove(List<Square> availableMoves, Player player, Board board, Square pawnLocation)
         {
 
-            if (player == Player.White && board.GetPiece(new Square(pawnLocation.Row-1, pawnLocation.Col))==null)
+            if (player == Player.White && board.GetPiece(new Square(pawnLocation.Row - 1, pawnLocation.Col)) == null)
             {
                 availableMoves.Add(new Square(pawnLocation.Row - 1, pawnLocation.Col));
             }
-            else if(player == Player.Black && board.GetPiece(new Square(pawnLocation.Row + 1, pawnLocation.Col)) == null)
+            else if (player == Player.Black && board.GetPiece(new Square(pawnLocation.Row + 1, pawnLocation.Col)) == null)
             {
                 availableMoves.Add(new Square(pawnLocation.Row + 1, pawnLocation.Col));
             }
@@ -98,31 +99,11 @@ namespace Chessington.GameEngine
 
         public static List<Square> AddDiagonalMoves(List<Square> availableMoves, Board board, Square pieceLocation)
         {
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.UpRight);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.UpLeft);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.DownRight);
+            availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.DownLeft);
 
-
-            for (int i = 1; i < GameSettings.BoardSize; i++)
-            {
-                var upAndRight = new Square(pieceLocation.Row - i, pieceLocation.Col + i);
-                if (Board.IsValidPosition(upAndRight))
-                {
-                    availableMoves.Add(upAndRight);
-                }
-                var upAndLeft = new Square(pieceLocation.Row - i, pieceLocation.Col - i);
-                if (Board.IsValidPosition(upAndLeft))
-                {
-                    availableMoves.Add(upAndLeft);
-                }
-                var downAndRight = new Square(pieceLocation.Row + i, pieceLocation.Col + i);
-                if (Board.IsValidPosition(downAndRight))
-                {
-                    availableMoves.Add(downAndRight);
-                }
-                var downAndLeft = new Square(pieceLocation.Row + i, pieceLocation.Col - i);
-                if (Board.IsValidPosition(downAndLeft))
-                {
-                    availableMoves.Add(downAndLeft);
-                }
-            }
             return availableMoves;
         }
 
@@ -130,7 +111,7 @@ namespace Chessington.GameEngine
         {
             availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Left);
             availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Right);
-            
+
             return availableMoves;
         }
 
@@ -138,7 +119,7 @@ namespace Chessington.GameEngine
         {
             availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Up);
             availableMoves = AddMovesUntilCollision(availableMoves, board, pieceLocation, Directions.Down);
-            
+
             return availableMoves;
         }
 
@@ -176,28 +157,28 @@ namespace Chessington.GameEngine
             switch (direction)
             {
                 case Directions.Up:
-                    return new Square(pieceLocation.Row - i,pieceLocation.Col );
+                    return new Square(pieceLocation.Row - i, pieceLocation.Col);
 
                 case Directions.Down:
-                    return new Square(pieceLocation.Row +i, pieceLocation.Col);
+                    return new Square(pieceLocation.Row + i, pieceLocation.Col);
 
                 case Directions.Left:
-                    return new Square(pieceLocation.Row, pieceLocation.Col-i);
+                    return new Square(pieceLocation.Row, pieceLocation.Col - i);
 
                 case Directions.Right:
-                    return new Square(pieceLocation.Row, pieceLocation.Col +i);
+                    return new Square(pieceLocation.Row, pieceLocation.Col + i);
 
                 case Directions.UpRight:
-                    return new Square(pieceLocation.Row-i, pieceLocation.Col + i);
+                    return new Square(pieceLocation.Row - i, pieceLocation.Col + i);
 
                 case Directions.DownRight:
-                    return new Square(pieceLocation.Row+i, pieceLocation.Col + i);
+                    return new Square(pieceLocation.Row + i, pieceLocation.Col + i);
 
                 case Directions.UpLeft:
-                    return new Square(pieceLocation.Row-i, pieceLocation.Col -i);
+                    return new Square(pieceLocation.Row - i, pieceLocation.Col - i);
 
                 case Directions.DownLeft:
-                    return new Square(pieceLocation.Row+i, pieceLocation.Col -i);
+                    return new Square(pieceLocation.Row + i, pieceLocation.Col - i);
 
             }
             return new Square();
@@ -207,7 +188,7 @@ namespace Chessington.GameEngine
         {
             var possibleMoves = GetPossibleKingMoves(pieceLocation);
             var availableMoves = new List<Square>();
-            foreach (var square in possibleMoves) 
+            foreach (var square in possibleMoves)
             {
                 if (Board.IsValidPosition(square))
                 {
@@ -221,16 +202,16 @@ namespace Chessington.GameEngine
         public static List<Square> GetPossibleKingMoves(Square pieceLocation)
         {
             var possibleMoves = new List<Square>();
-            
 
-            possibleMoves.Add(new Square(pieceLocation.Row+1,pieceLocation.Col));
+
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col));
             possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col));
-            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col+1));
-            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col-1));
-            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col+1));
-            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col-1));
-            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col+1));
-            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col-1));
+            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col + 1));
+            possibleMoves.Add(new Square(pieceLocation.Row, pieceLocation.Col - 1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col + 1));
+            possibleMoves.Add(new Square(pieceLocation.Row + 1, pieceLocation.Col - 1));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col + 1));
+            possibleMoves.Add(new Square(pieceLocation.Row - 1, pieceLocation.Col - 1));
 
             return possibleMoves;
         }
