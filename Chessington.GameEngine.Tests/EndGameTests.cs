@@ -24,7 +24,7 @@ namespace Chessington.GameEngine.Tests
 
             board.MovePiece(Square.At(4, 5), Square.At(3, 5));
 
-            board.gameEnded.Should().Be(Board.GameOver.Stalemate);
+            board.gameState.Should().Be(Board.GameState.Stalemate);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace Chessington.GameEngine.Tests
 
             board.MovePiece(Square.At(4, 1), Square.At(5, 1));
 
-            board.gameEnded.Should().Be(Board.GameOver.BlackWin);
+            board.gameState.Should().Be(Board.GameState.BlackWin);
         }
 
         [Test]
@@ -62,8 +62,60 @@ namespace Chessington.GameEngine.Tests
 
             board.MovePiece(Square.At(4, 1), Square.At(5, 1));
 
-            board.gameEnded.Should().Be(Board.GameOver.WhiteWin);
+            board.gameState.Should().Be(Board.GameState.WhiteWin);
 
+        }
+
+        [Test]
+        public void Black_CanBeInCheck()
+        {
+            var board = new Board();
+            var whiteRook = new Rook(Player.White);
+            var blackKing = new King(Player.Black);
+
+            board.AddPiece(Square.At(0, 0), whiteRook);
+            board.AddPiece(Square.At(7, 0), blackKing);
+
+            foreach (var el in whiteRook.GetAvailableMoves(board))
+            {
+                Console.WriteLine(el.ToString());
+            }
+            board.IsInCheck(Player.Black).Should().BeTrue();
+        }
+
+        [Test]
+        public void White_CanBeInCheck()
+        {
+            var board = new Board();
+            var blackKnight = new Knight(Player.Black);
+            var whiteKing = new King(Player.White);
+
+            board.AddPiece(Square.At(0, 0), whiteKing);
+            board.AddPiece(Square.At(1, 2), blackKnight);
+
+            board.IsInCheck(Player.White).Should().BeTrue();
+        }
+
+        [Test]
+        public void White_KingCanBeFound()
+        {
+            var board = new Board();
+            var whiteKing = new King(Player.White);
+
+            board.AddPiece(Square.At(4, 6), whiteKing);
+
+            board.GetKingLocation(Player.White).Should().Be(new Square(4,6));
+        }
+
+        [Test]
+        public void Black_KingCanBeFound()
+        {
+            var board = new Board(Player.Black);
+            var blackKing = new King(Player.Black);
+
+            board.AddPiece(Square.At(2, 1), blackKing);
+
+            board.GetKingLocation(Player.Black).Should().Be(new Square(2, 1));
         }
 
     }

@@ -11,9 +11,9 @@ namespace Chessington.GameEngine
         private readonly Piece[,] board;
         public Player CurrentPlayer { get; private set; }
         public IList<Piece> CapturedPieces { get; private set; }
-        public GameOver gameEnded = GameOver.StillPlaying;
+        public GameState gameState = GameState.StillPlaying;
 
-        public enum GameOver
+        public enum GameState
         {
             StillPlaying,
             Stalemate,
@@ -71,6 +71,8 @@ namespace Chessington.GameEngine
                 throw new ArgumentException("The supplied piece does not belong to the current player.");
             }
 
+            //Check that you don't leave the king in check
+
             //If the space we're moving to is occupied, we need to mark it as captured.
             if (board[to.Row, to.Col] != null)
             {
@@ -94,22 +96,23 @@ namespace Chessington.GameEngine
             //Check if stalemate reached
             if (IsStaleMate(CurrentPlayer))
             {
-                gameEnded = GameOver.Stalemate;
-                GameOverMessage(GameOver.Stalemate);
+                gameState = GameState.Stalemate;
+                GameOverMessage(GameState.Stalemate);
             }
+            
 
             if (IsInCheckMate(CurrentPlayer))
             {
                 
                 if (CurrentPlayer == Player.White)
                 {
-                    GameOverMessage(GameOver.BlackWin);
-                    gameEnded = GameOver.BlackWin;
+                    GameOverMessage(GameState.BlackWin);
+                    gameState = GameState.BlackWin;
                 }
                 else
                 {
-                    GameOverMessage(GameOver.WhiteWin);
-                    gameEnded = GameOver.WhiteWin;
+                    GameOverMessage(GameState.WhiteWin);
+                    gameState = GameState.WhiteWin;
                 }
             }
 
@@ -117,14 +120,17 @@ namespace Chessington.GameEngine
             OnCurrentPlayerChanged(CurrentPlayer);
         }
 
-        private bool IsInCheck(Player player)
+        public bool IsInCheck(Player player)
         {
             Square kingSquare = GetKingLocation(player);
-
             foreach (var piece in board)
             {
                 if (piece != null && piece.Player != player)
                 {
+                    foreach (var el in piece.GetAvailableMoves(this))
+                    {
+                        Console.WriteLine(el.ToString());
+                    }
                     if (piece.GetAvailableMoves(this).Contains(kingSquare))
                     {
                         return true;
@@ -134,13 +140,13 @@ namespace Chessington.GameEngine
             return false;
         }
 
-        private Square GetKingLocation(Player player)
+        public Square GetKingLocation(Player player)
         {
             for (int row = 0; row < GameSettings.BoardSize; row++)
             {
                 for (int col = 0; col < GameSettings.BoardSize; col++)
                 {
-                    if (board[row, col] is King && board[row, col].Player == CurrentPlayer)
+                    if (board[row, col] is King  && board[row, col].Player == player)
                     {
                         return new Square(row, col);
                     }
@@ -148,10 +154,7 @@ namespace Chessington.GameEngine
             }
             return new Square();
         }
-
-
-
-
+        
         private bool IsInCheckMate(Player currentPlayer)
         {
             if (!IsInCheck(currentPlayer))
@@ -170,30 +173,32 @@ namespace Chessington.GameEngine
                         Board copyBoard = new Board(currentPlayer, copyOfBoard);
 
                         Square pieceSquare = copyBoard.FindPiece(piece);
-
+                        
                         copyBoard.MovePiece(pieceSquare,move);
-                        if (!IsInCheck(currentPlayer))
+                        bool test = copyBoard.IsInCheck(currentPlayer);
+                        if (!copyBoard.IsInCheck(currentPlayer))
                         {
                             return false;
                         }
+
                     }
                 }
             }
             return true;
         }
 
-        private void GameOverMessage(GameOver gameOverType)
+        private void GameOverMessage(GameState gameStateType)
         {
-            if (gameOverType == GameOver.BlackWin)
+            if (gameStateType == GameState.BlackWin)
             {
                 MessageBox.Show("Black wins! Click below to restart");
 
             }
-            else if (gameOverType == GameOver.WhiteWin)
+            else if (gameStateType == GameState.WhiteWin)
             {
                 MessageBox.Show("White wins! Click below to restart");
             }
-            else if (gameOverType == GameOver.Stalemate)
+            else if (gameStateType == GameState.Stalemate)
             {
                 MessageBox.Show("Stalemate, it's a draw! Click below to restart");
             }
